@@ -1,0 +1,32 @@
+items = []
+items.append(["Lockpick", 20])
+items.append(["Multitool", 20])
+items.append(["MedKit", 30])
+items.append(["FireExtinguisher", 5])
+items.append(["BioelectricCell", 30])
+items.append(["762mm", 300])
+items.append(["EMPGrenade", 10])
+items.append(["Dart", 60])
+items.append(["Pepper", 400])
+items.append(["Napalm", 400])
+items.append(["3006", 96])
+items.append(["Sabot", 96])
+items.append(["Shuriken", 25])
+items.append(["Rocket", 20])
+items.append(["Shell", 96])
+items.append(["Plasma", 84])
+items.append(["RocketRobot", 60])
+items.append(["GreaselSpit", 60])
+items.append(["LAM", 10])
+items.append(["RocketMini", 60])
+items.append(["20mm", 32])
+items.append(["GraySpit", 60])
+items.append(["NanoVirusGrenade", 10])
+items.append(["10mm", 150])
+items.append(["Battery", 40])
+items.append(["GasGrenade", 10])
+
+_scalar = 0.15
+
+for name, maximum in items:
+    print(f'Max {f"{name}:":18} {round(maximum * _scalar)}')
