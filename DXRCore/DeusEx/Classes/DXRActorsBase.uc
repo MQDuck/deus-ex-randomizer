@@ -1663,19 +1663,23 @@ static function bool ChangeInitialAlliance(ScriptedPawn pawn, Name allianceName,
     return true;
 }
 
-function DeusExGoal AddGoalFromConv(#var(PlayerPawn) player, name goaltag, name convname, optional int which)
+// Creates or updates a goal with text taken from a Conversation
+function DeusExGoal AddGoalFromConv(#var(PlayerPawn) player, name goaltag, name convname, optional int which, optional bool dontReplaceText)
 {
     local DeusExGoal goal;
     local ConEventAddGoal ceag;
 
+    ceag = GetGoalConEvent(goaltag, convname, which);
+    if (ceag == None)
+        return None;
     goal = player.FindGoal(goaltag);
 
-    if (goal == None) {
-        ceag = GetGoalConEvent(goaltag, convname, which);
-        if (ceag == None) return None;
+    if (goal == None)
         goal = player.AddGoal(goaltag, ceag.bPrimaryGoal);
-        goal.SetText(ceag.goalText);
-    }
+    else if (dontReplaceText)
+        return goal;
+
+    goal.SetText(ceag.goalText);
 
     return goal;
 }

@@ -26,6 +26,7 @@ function PreFirstEntryMapFixes()
     {
     case "10_PARIS_CATACOMBS":
         FixConversationAddNote(GetConversation('MeetAimee'), "Stupid, stupid, stupid password.");
+        player().GoalCompleted('FindSilhouette'); // let Jock give you this goal again with updated text
         SetAllLampsState(true, false, true); // lamps in the building next to the metro station
         break;
 
