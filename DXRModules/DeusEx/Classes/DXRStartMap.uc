@@ -64,6 +64,15 @@ function PreFirstEntry()
         dxr.flagbase.SetBool('FemJCMeetTobyAtanwe_played',true,,-1);
         break;
 
+    case "14_OceanLab_Lab":
+        if (dxr.flags.settings.starting_map == 142) {
+            foreach AllActors(class'ElevatorMover', eMover, 'Lift') {
+                eMover.InterpolateTo(1, 0.0);
+                break;
+            }
+        }
+        break;
+
     case "15_Area51_Bunker":
         if (dxr.flags.settings.starting_map > 150) {
             foreach AllActors(class'ElevatorMover', eMover, 'elevator_shaft') {
