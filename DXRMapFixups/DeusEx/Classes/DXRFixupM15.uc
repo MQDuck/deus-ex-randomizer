@@ -161,6 +161,10 @@ function PreFirstEntryMapFixes_Bunker()
 
     FixJockExplosion();
 
+    if (dxr.flagbase.GetBool('EverettMechanicComment')) {
+        dxr.flagbase.SetBool('Ray_Dead', true,, 999);
+    }
+
     Spawn(class'#var(prefix)LiquorBottle',,, vectm(1005.13,2961.26,-480)); //Liquor in a locker, so every mission has alcohol
 
     foreach AllActors(class'#var(prefix)Fan1',fan,'Fan_vertical_shaft_1'){ //The "jump, you can make it!" fan
