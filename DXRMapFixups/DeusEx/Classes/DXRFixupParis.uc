@@ -484,6 +484,8 @@ function AnyEntryMapFixes()
             c.eventList = cet;
         }
 
+        SetTimer(0.1, true);
+
         break;
     case "11_PARIS_UNDERGROUND":
         //Add a flag change to Toby's conversation so it sets MS_PlayerTeleported to false if you choose the "take me with you" option
@@ -575,5 +577,20 @@ function PostFirstEntryMapFixes()
         }
 
         break;
+    }
+}
+
+function Timer()
+{
+    local #var(prefix)NicoletteDuClare nico;
+
+    Super.Timer();
+
+    if (dxr.localURL == "10_PARIS_METRO" && dxr.flagbase.GetBool('JockReady_Played')) {
+        foreach AllActors(class'#var(prefix)NicoletteDuClare', nico) {
+            nico.LeaveWorld(); // so that she can't ever be seen as you fly away
+            SetTimer(0.0, false); // makes very little difference since 'JockReady_Played' is reset in ParisMetroAnyEntry()
+            break;
+        }
     }
 }
