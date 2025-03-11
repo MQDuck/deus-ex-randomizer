@@ -1614,6 +1614,23 @@ function MarkBingoFailedSpecial()
             MarkBingoAsFailed("GaveDowdAmbrosia");
         }
         MarkBingoAsFailed("ChangeClothes");
+        MarkBingoAsFailed("ShipPowerCut");
+        MarkBingoAsFailed("CraneTop");
+        MarkBingoAsFailed("CaptainBed");
+        MarkBingoAsFailed("FanTop");
+        MarkBingoAsFailed("ShipLockerKeys");
+        MarkBingoAsFailed("ShipsBridge");
+        MarkBingoAsFailed("ShipRamp");
+        MarkBingoAsFailed("SuperfreighterProp");
+        MarkBingoAsFailed("ShipNamePlate");
+        MarkBingoAsFailed("FreighterHelipad");
+        MarkBingoAsFailed("SpinShipsWheel");
+        MarkBingoAsFailed("CraneControls");
+        MarkBingoAsFailed("SlippingHazard");
+        MarkBingoAsFailed("CrackSafe");
+        MarkBingoAsFailed("09_Email08");
+        MarkBingoAsFailed("Titanic");
+
         break;
     case "11_PARIS_EVERETT":
         if(dxr.flags.IsReducedRando()) {
@@ -3571,7 +3588,7 @@ defaultproperties
     bingo_options(139)=(event="StatueHead",desc="Visit the head of the Statue of Liberty",max=1,missions=2)
     bingo_options(140)=(event="CraneControls",desc="Use the dockside crane controls",max=1,missions=512)
     bingo_options(141)=(event="CraneTop",desc="Visit the end of both cranes on the freighter",max=2,missions=512)
-    bingo_options(142)=(event="CaptainBed",desc="Jump on the freighter captains bed",max=1,missions=512)
+    bingo_options(142)=(event="CaptainBed",desc="Jump on the freighter captain's bed",max=1,missions=512)
     bingo_options(143)=(event="FanTop",desc="Get blown to the top of the freighter ventilation shaft",max=1,missions=512)
     bingo_options(144)=(event="LouisBerates",desc="Sneak behind the Porte De L'Enfer door man",max=1,missions=1024)
     bingo_options(145)=(event="EverettAquarium",desc="Go for a swim in Everett's aquarium",max=1,missions=2048)
