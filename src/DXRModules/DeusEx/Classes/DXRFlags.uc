@@ -797,6 +797,8 @@ function SetDifficulty(int new_difficulty)
     }
 
     class'DXRLoadouts'.static.AdjustFlags(self, loadout); // new game menu doesn't initialize its own DXRLoadouts
+
+    playthrough_version = VersionNumber();
 }
 //#endregion
 

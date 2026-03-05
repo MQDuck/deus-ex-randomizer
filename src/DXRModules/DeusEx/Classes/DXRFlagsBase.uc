@@ -16,6 +16,7 @@ var #var(flagvarprefix) int next_seed;
 
 var #var(flagvarprefix) int seed, playthrough_id;
 var #var(flagvarprefix) int flagsversion;//if you load an old game with a newer version of the randomizer, we'll need to set defaults for new flags
+var #var(flagvarprefix) int playthrough_version;
 
 // these config vars will be remembered for next time you open the new game screen
 var config int gamemode;// see DXRFlags.uc for definitions

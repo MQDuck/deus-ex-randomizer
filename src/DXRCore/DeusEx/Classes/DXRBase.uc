@@ -112,11 +112,6 @@ simulated event Destroyed()
     Super.Destroyed();
 }
 
-simulated function int MurmurHash(coerce string str)
-{
-    return MurmurHash3_x86_32(str, dxr.seed); // note that the result depends on the current seed
-}
-
 simulated function int SetSeed(coerce string name)
 {
     local int oldseed;
@@ -137,7 +132,7 @@ simulated function int SetGlobalSeed(coerce string name)
 simulated function int SetGlobalSeedNew(coerce string name)
 {
     local int oldseed;
-    oldseed = dxr.SetSeed( MurmurHash(name) );
+    oldseed = dxr.SetSeed( dxr.MurmurHash(name) );
     dxr.rngraw();// advance the rng
     return oldseed;
 }
