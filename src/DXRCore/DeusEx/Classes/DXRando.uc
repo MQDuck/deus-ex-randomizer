@@ -735,9 +735,14 @@ simulated final function int Crc(coerce string Text) {
     return CrcValue;
 }
 
+simulated function bool UseMurmurHash3()
+{
+    return flags.loop_initial_version >= 3070005;
+}
+
 simulated function int HashCompat(int crcVal, int murmurVal)
 {
-    if (flags.loop_initial_version >= 3070005) { // 3.7.0.5
+    if (UseMurmurHash3()) {
         return murmurVal;
     }
     return crcVal;
