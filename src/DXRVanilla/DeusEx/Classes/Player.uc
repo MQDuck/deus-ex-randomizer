@@ -2357,6 +2357,11 @@ exec function PlayerLoc()
     ClientMessage("Player location: (" $ Location.x $ ", " $ Location.y $ ", " $ Location.z $ ")");
 }
 
+exec function LoopInitialVersion()
+{
+    ClientMessage(class'DXRando'.default.dxr.flags.loop_initial_version);
+}
+
 exec function PlayerRot()
 {
     ClientMessage("Player rotation: (" $ Rotation.pitch $ ", " $ Rotation.yaw $ ", " $ Rotation.roll $ ")");

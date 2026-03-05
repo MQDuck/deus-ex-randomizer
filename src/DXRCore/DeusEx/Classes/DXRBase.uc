@@ -132,7 +132,7 @@ simulated function int SetGlobalSeed(coerce string name)
 simulated function int SetGlobalSeedNew(coerce string name)
 {
     local int oldseed;
-    oldseed = dxr.SetSeed( dxr.MurmurHash(name) );
+    oldseed = dxr.SetSeed( MurmurHash3(name, dxr.seed) );
     dxr.rngraw();// advance the rng
     return oldseed;
 }

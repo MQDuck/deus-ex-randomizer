@@ -735,73 +735,9 @@ simulated final function int Crc(coerce string Text) {
     return CrcValue;
 }
 
-// https://github.com/aappleby/smhasher
-simulated static function int MurmurHash3_x86_32(coerce string str, int seed)
+simulated function int HashCompat(int crcVal, int murmurVal)
 {
-    local int strLen, h1, k1, i;
-
-    strLen = Len(str);
-    h1 = seed;
-    for (i = 0; i <= strLen - 4; i += 4)
-    {
-        k1 = Asc(Mid(str, i, 1)) | (Asc(Mid(str, i+1, 1)) << 8) | (Asc(Mid(str, i+2, 1)) << 16) | (Asc(Mid(str, i+3, 1)) << 24);
-
-        k1 = k1 * 0xcc9e2d51; // *= produces a different result
-        k1 = (k1 << 15) | (k1 >>> 17);
-        k1 = k1 * 0x1b873593;
-
-        h1 = h1 ^ k1;
-        h1 = (h1 << 13) | (h1 >>> 19);
-        h1 = (h1 * 5) + 0xe6546b64;
-    }
-
-    k1 = 0;
-    switch (strLen & 3)
-    {
-        case 3:
-            k1 = k1 ^ (Asc(Mid(str, i+2, 1)) << 16);
-        case 2: // fallthrough
-            k1 = k1 ^ (Asc(Mid(str, i+1, 1)) << 8);
-        case 1: // fallthrough
-            k1 = k1 ^ Asc(Mid(str, i, 1));
-            k1 = k1 * 0xcc9e2d51;
-            k1 = (k1 << 15) | (k1 >>> 17);
-            k1 = k1 * 0x1b873593;
-            h1 = h1 ^ k1;
-    }
-
-    h1 = h1 ^ strLen;
-    h1 = h1 ^ (h1 >>> 16);
-    h1 = h1 * 0x85ebca6b;
-    h1 = h1 ^ (h1 >>> 13);
-    h1 = h1 * 0xc2b2ae35;
-    h1 = h1 ^ (h1 >>> 16);
-
-    return h1;
-}
-
-simulated function int MurmurHash(coerce string str)
-{
-    return MurmurHash3_x86_32(str, dxr.seed); // note that the result depends on the current seed
-}
-
-simulated function bool UseMurmurHash()
-{
-    return flags.playthrough_version >= 3070005; // 3.7.0.5
-}
-
-simulated function int CompatHash(coerce string crcStr, coerce string murmurStr, optional bool nonRandom)
-{
-    if (UseMurmurHash()) {
-        if (nonRandom) return MurmurHash3_x86_32(murmurStr, -1);
-        return MurmurHash(murmurStr);
-    }
-    return Crc(crcStr);
-}
-
-simulated function int CompatHash2(int crcVal, int murmurVal) // a very clever name
-{
-    if (UseMurmurHash()) {
+    if (flags.loop_initial_version >= 3070005) { // 3.7.0.5
         return murmurVal;
     }
     return crcVal;

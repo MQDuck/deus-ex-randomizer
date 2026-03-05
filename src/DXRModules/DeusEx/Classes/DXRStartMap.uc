@@ -45,6 +45,7 @@ function PreFirstEntry()
     starting_map = dxr.flags.GetStartingMap();
 
     if(IsStartMap()) {
+        dxr.flags.loop_initial_version = VersionNumber();
         PreFirstEntryStartMapFixes(p, p.flagbase, starting_map);
     }
 

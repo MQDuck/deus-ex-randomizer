@@ -559,8 +559,8 @@ simulated static function String CR()
     return Chr(13) $ Chr(10);
 }
 
-// https://github.com/aappleby/smhasher
-simulated static function int MurmurHash3_x86_32(coerce string str, int seed)
+// MurmurHash3_x86_32 https://github.com/aappleby/smhasher
+simulated static function int MurmurHash3(coerce string str, optional int seed)
 {
     local int strLen, h1, k1, i;
 
