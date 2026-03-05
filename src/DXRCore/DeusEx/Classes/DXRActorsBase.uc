@@ -857,7 +857,7 @@ static function SortActorList(out ActorSort as[64])
     for (slot=0; slot < ArrayCount(as); slot++) {
         if (as[slot].a!=None) {
             if (as[slot].sortVal==0){
-                as[slot].sortVal = dxrand.Crc(as[slot].a.class);
+                as[slot].sortVal = dxrand.HashCompat( dxrand.Crc(as[slot].a.class), MurmurHash3(as[slot].a.class) );
             }
             numActors++;
         }

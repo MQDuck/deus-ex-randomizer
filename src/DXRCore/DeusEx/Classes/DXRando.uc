@@ -511,7 +511,7 @@ function DXRTick(float deltaTime)
     }
     else if(runPostFirstEntry)
     {
-        SetSeed( Crc(seed $ localURL $ " PostFirstEntry") );
+        SetSeed( HashCompat(Crc(seed $ localURL $ " PostFirstEntry"), MurmurHash3(localURL $ "PostFirstEntry", seed)) );
         for(i=0; i<num_modules; i++) {
             modules[i].PostFirstEntry();
         }
@@ -522,7 +522,7 @@ function DXRTick(float deltaTime)
     {
         RunTests();
 
-        SetSeed( Crc(seed $ localURL $ " PostAnyEntry") );
+        SetSeed(HashCompat( Crc(seed $ localURL $ " PostAnyEntry"), MurmurHash3(localURL $ " PostAnyEntry", seed) ));
         for(i=0; i<num_modules; i++) {
             modules[i].PostAnyEntry();
         }
@@ -560,7 +560,7 @@ function RandoEnter()
 
     info("RandoEnter() firstTime: "$firstTime$", IsTravel: "$IsTravel$", seed: "$seed @ localURL @ map @ GetURLMap());
 
-    SetSeed( Crc(seed $ localURL @ firstTime) );
+    SetSeed(HashCompat( Crc(seed $ localURL @ firstTime), MurmurHash3(localURL $ firstTime, seed) ));
     if ( firstTime == true )
     {
         //if( !IsTravel ) warning(localURL$": loaded save but FirstEntry? firstTime: "$firstTime$", IsTravel: "$IsTravel);
@@ -585,12 +585,12 @@ function RandoEnter()
         }
     }
 
-    SetSeed( Crc(seed $ localURL $ " AnyEntry") );
+    SetSeed(HashCompat( Crc(seed $ localURL $ " AnyEntry"), MurmurHash3(localURL $ "AnyEntry", seed) ));
     for(i=0; i<num_modules; i++) {
         modules[i].AnyEntry();
     }
 
-    SetSeed( Crc(seed $ localURL $ " PlayerLogin") );
+    SetSeed(HashCompat( Crc(seed $ localURL $ " PlayerLogin"), MurmurHash3(localURL $ "PlayerLogin", seed) ));
     foreach AllActors(class'#var(PlayerPawn)', pawn) {
         PlayerLogin(pawn);
     }
