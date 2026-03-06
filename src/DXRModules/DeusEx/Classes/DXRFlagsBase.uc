@@ -181,7 +181,8 @@ function AnyEntry()
 function RollSeed()
 {
     if (dxr.UseMurmurHash3()) {
-        seed = MurmurHash3( Rand(MaxInt) @ (FRand()*1000000) @ (Level.TimeSeconds*1000), dxr.seed ) % 1000000;
+        // TODO: test this
+        seed = Abs(MurmurHash3( Rand(MaxInt) @ (FRand()*1000000) @ (Level.TimeSeconds*1000), dxr.seed )) % 1000000;
     } else {
         seed = dxr.Crc( Rand(MaxInt) @ (FRand()*1000000) @ (Level.TimeSeconds*1000) );
         dxr.seed = seed;
@@ -216,7 +217,8 @@ function HXRollSeed()
 function NewPlaythroughId() {
     local DataStorage ds;
     playthrough_id = class'DataStorage'.static._SystemTime(Level);
-    playthrough_id += Rand(MaxInt) + dxr.Crc(Level.TimeSeconds) * 65536;
+    // TODO: why *65536?
+    playthrough_id += Rand(MaxInt) + dxr.HashCompat(dxr.Crc(Level.TimeSeconds), MurmurHash3(Level.TimeSeconds)) * 65536;
 
     ds = class'DataStorage'.static.GetObj(dxr);
     if( ds != None && ds.HasPlaythroughId(playthrough_id) ) {
@@ -1187,7 +1189,10 @@ simulated function string StringifyFlags(int mode)
 simulated function int FlagsHash()
 {
     local int hash;
-    hash = dxr.Crc(StringifyFlags(Hashing));
+    local string flagsStr;
+
+    flagsStr = StringifyFlags(Hashing);
+    hash = dxr.HashCompat( dxr.Crc(flagsStr), MurmurHash3(flagsStr) );
     hash = int(abs(hash));
     return hash;
 }

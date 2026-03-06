@@ -319,7 +319,10 @@ simulated function NGPlusFlags(#var(PlayerPawn) p)
         exp = newgameplus_loops;
     }
 
-    dxr.SetSeed(dxr.Crc("NG+ curve tweak " $ (seed - newgameplus_loops)));
+    dxr.SetSeed(dxr.HashCompat(
+        dxr.Crc("NG+ curve tweak " $ (seed - newgameplus_loops)),
+        MurmurHash3("NG+ curve tweak", seed - newgameplus_loops)
+    ));
     rng(9);// advance the rng
 #ifdef hx
     p.CombatDifficulty = 3;// I don't think NG+ works in HX anyways?
