@@ -738,11 +738,12 @@ simulated final function int Crc(coerce string Text) {
 
 simulated function bool UseMurmurHash3()
 {
-    return flags.loop_initial_version >= 3070005;
+    return flags.loop_initial_version >= VersionToInt(3,7,1,2); // using DXRMapInfo, this is called 44,000 times
 }
 
 simulated function int HashCompat(int crcVal, int murmurVal)
 {
+    log("RUNNING HASH COMPAT");
     if (UseMurmurHash3()) {
         return murmurVal;
     }

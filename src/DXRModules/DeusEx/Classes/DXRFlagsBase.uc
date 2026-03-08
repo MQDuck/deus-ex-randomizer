@@ -457,6 +457,8 @@ simulated function string BindFlags(int mode, optional string str)
 
     FlagInt('Rando_aug_loc_rando',moresettings.aug_loc_rando,mode,str);
 
+    FlagInt('Rando_loop_initial_version',loop_initial_version,mode,str);
+
     if(mode!=Reading && mode!=Writing) {
         i = int(class'MenuChoice_BalanceAugs'.static.IsEnabled());
         FlagInt('MenuChoice_BalanceAugs', i, mode, str);
