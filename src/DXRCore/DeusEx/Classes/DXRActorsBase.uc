@@ -165,6 +165,23 @@ static function bool WeaponIsAmmo(class<Inventory> i)
 
 }
 
+static function bool IsActuallyFrobbable(Actor a)
+{
+    if (DeusExMover(a) != None) {
+        return DeusExMover(a).bFrobbable && DeusExMover(a).bHighlight;
+    } else if (DeusExDecoration(a) != None) {
+        return DeusExDecoration(a).bHighlight;
+    } else if (ScriptedPawn(a) != None) {
+        return ScriptedPawn(a).bHighlight;
+    } else if (DeusExCarcass(a) != None) {
+        return DeusExCarcass(a).bHighlight;
+    } else if (ThrownProjectile(a) != None) {
+        return ThrownProjectile(a).bHighlight;
+    } else {
+        return Inventory(a) != None || Mover(a) != None || DeusExProjectile(a) != None; // TODO: should Movers and DeusExProjectiles really return true?
+    }
+}
+
 static function bool RemoveItem(Pawn p, class c)
 {
     local ScriptedPawn sp;
@@ -2561,6 +2578,12 @@ function ReduceHelicopterDelay(name dispTag, optional int idx, optional float ne
         disp.OutDelays[idx]=newDelay;
     }
 }
+
+/*// returns the angle (-pi, pi] from a to b, ignoring Z coordinates
+static function float AngleAToB(vector a, vector b)
+{
+    return Atan(a.x*b.y - a.y*b.x, a.x*b.x + a.y*b.y);
+}*/
 
 
 //This makes life easier and more consistent when starting infolinks from code.

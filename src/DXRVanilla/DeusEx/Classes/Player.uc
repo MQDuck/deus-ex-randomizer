@@ -2430,6 +2430,11 @@ exec function PlayerRot()
     ClientMessage("Player rotation: (" $ Rotation.pitch $ ", " $ Rotation.yaw $ ", " $ Rotation.roll $ ")");
 }
 
+exec function PlayerViewRot()
+{
+    ClientMessage("Player view rotation: (" $ ViewRotation.pitch $ ", " $ ViewRotation.yaw $ ", " $ ViewRotation.roll $ ")");
+}
+
 // log the Location of the Actor looked at, so you don't have to type it manually
 exec function LookedLoc()
 {
@@ -2440,6 +2445,114 @@ exec function LookedLoc()
         ClientMessage("No Actor looked at.");
     else
         ClientMessage("Looking at " $ act $ " at Location (" $ act.Location.x $ ", " $ act.Location.y $ ", " $ act.Location.z $ ")");
+}
+
+// modified HighlightCenterObject()
+function Actor WouldBeHighlighted(Rotator rot)
+{
+    local Actor target, smallestTarget;
+	local Vector HitLoc, HitNormal, StartTrace, EndTrace;
+	local float minSize;
+	local bool bFirstTarget;
+
+    // figure out how far ahead we should trace
+    StartTrace = Location;
+    EndTrace = Location + (Vector(rot) * MaxFrobDistance);
+
+    // adjust for the eye height
+    StartTrace.Z += BaseEyeHeight;
+    EndTrace.Z += BaseEyeHeight;
+
+    smallestTarget = None;
+    minSize = 99999;
+    bFirstTarget = True;
+
+    // find the object that we are looking at
+    // make sure we don't select the object that we're carrying
+    // use the last traced object as the target...this will handle
+    // smaller items under larger items for example
+    // ScriptedPawns always have precedence, though
+    foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
+    {
+        if (class'DXRActorsBase'.static.IsActuallyFrobbable(target) && (target != CarriedDecoration))
+        {
+            if (target.IsA('ScriptedPawn'))
+            {
+                smallestTarget = target;
+                break;
+            }
+            else if (target.IsA('Mover') && bFirstTarget)
+            {
+                smallestTarget = target;
+                break;
+            }
+            else if (target.CollisionRadius < minSize)
+            {
+                minSize = target.CollisionRadius;
+                smallestTarget = target;
+                bFirstTarget = False;
+            }
+        }
+    }
+
+    return smallestTarget;
+}
+
+// Look at the closest frobbable object in range
+function LookClosest(bool bLookRight)
+{
+    local Actor current, something;
+    local vector difference;
+    local rotator rot, nextRot;
+    local int yaw, nextYaw, yawMult;
+
+    if (bLookRight) {
+        yawMult = -1;
+    } else {
+        yawMult = 1;
+    }
+
+    current = WouldBeHighlighted(ViewRotation);
+    foreach RadiusActors(
+        class'Actor',
+        something,
+        MaxFrobDistance,
+        class'DXRActorsBase'.static.MakeVector(Location.X, Location.Y, Location.Z + BaseEyeHeight)
+    ) {
+        difference = something.Location - Location;
+        difference.Z -= BaseEyeHeight;
+        rot = rotator(difference);
+        yaw = (ViewRotation.Yaw - rot.Yaw) & 65535; // normalize to [0, 65535]
+        if (yaw > 32767) {
+            yaw -= 65536;  // fold to [-32768, 32767]
+        }
+        yaw *= yawMult; // swap sign if we're looking right
+
+        if (
+            something.Location != Location // ignore inventory items
+            && (yaw > 0.0 && yaw < 81925) // look in the correct direction, but not too far
+            && something != current // ignore what's already highlighted
+            && (yaw < nextYaw || nextYaw == 0.0) // pick the angularly closest Actor
+            && WouldBeHighlighted(rot) == something // ignore if something else is in front
+        ) {
+            nextYaw = yaw;
+            nextRot = rot;
+        }
+    }
+
+    if (nextYaw != 0.0) {
+        ViewRotation = nextRot;
+    }
+}
+
+exec function LookLeft()
+{
+    LookClosest(false);
+}
+
+exec function LookRight()
+{
+    LookClosest(true);
 }
 
 exec function LootActions()
