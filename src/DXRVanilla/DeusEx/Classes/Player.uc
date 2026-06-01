@@ -11,6 +11,7 @@ var bool bAutorun;
 var float autorunTime;
 var bool bBlockAnimations;
 var transient bool bUpgradeAugs;
+var int minYaw, maxYaw; // for debugging; maybe remove later
 
 var Rotator ShakeRotator;
 
@@ -2501,7 +2502,7 @@ function Actor WouldBeHighlighted(Rotator rot)
 // Look at the closest frobbable object in range
 function LookClosest(bool bLookRight)
 {
-    local Actor current, something;
+    local Actor current, something, next;
     local vector difference;
     local rotator rot, nextRot;
     local int yaw, nextYaw, yawMult;
@@ -2530,19 +2531,47 @@ function LookClosest(bool bLookRight)
 
         if (
             something.Location != Location // ignore inventory items
-            && (yaw > 0.0 && yaw < 81925) // look in the correct direction, but not too far
+            && (yaw > minYaw && yaw < maxYaw) // look slightly in the opposite direction, or 90 degrees in the normal direction
             && something != current // ignore what's already highlighted
-            && (yaw < nextYaw || nextYaw == 0.0) // pick the angularly closest Actor
+            && (Abs(yaw) < nextYaw || next == None) // pick the angularly closest Actor
             && WouldBeHighlighted(rot) == something // ignore if something else is in front
         ) {
-            nextYaw = yaw;
+            next = something;
+            nextYaw = Abs(yaw);
             nextRot = rot;
         }
+        // if (something.Location == Location) continue;
+        // ClientMessage("something: " $ something);
+        // ClientMessage("yaw: " $ yaw);
+        // ClientMessage("rot: " $ rot);
+        // ClientMessage("next: " $ next);
+        // ClientMessage("nextYaw: " $ nextYaw);
+        // ClientMessage("nextRot: " $ nextRot);
     }
 
-    if (nextYaw != 0.0) {
+    if (next != None) {
+        // ClientMessage("trying to look at " $ next);
         ViewRotation = nextRot;
     }
+}
+
+exec function ShowMinYaw()
+{
+    ClientMessage(minYaw);
+}
+
+exec function ShowMaxYaw() {
+    ClientMessage(maxYaw);
+}
+
+exec function SetMinYaw(int minYaw)
+{
+    self.minYaw = minYaw;
+}
+
+exec function SetMaxYaw(int maxYaw)
+{
+    self.maxYaw = maxYaw;
 }
 
 exec function LookLeft()
@@ -2879,6 +2908,8 @@ defaultproperties
     SkillPointsAvail=6575
     LastBrowsedAugPage=-1 //OAT, 1/12/24: Hack so backtracking levels doesn't sometimes forget which page you saved last.
     LastBrowsedAug=-1 //OAT, same idea here.
+    minYaw=-2047
+    maxYaw=16383
 }
 
 // ---
