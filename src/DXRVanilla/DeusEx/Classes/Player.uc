@@ -2499,6 +2499,37 @@ function Actor WouldBeHighlighted(Rotator rot)
     return smallestTarget;
 }
 
+function bool SnapClassFilter(Actor a)
+{
+    return true;
+    return (
+        dxr.flags.IsBingoMode() == true || (
+            Lamp(a) == None // snap to these in bingo modes only
+            && Fan1(a) == None
+            && Fan2(a) == None
+            && Fan1Vertical(a) == None
+            && Lamp(a) == None
+            && HKHangingLantern(a) == None
+            && HKHangingLantern2(a) == None
+            && Phone(a) == None
+            && WHPhone(a) == None
+            && TAD(a) == None
+            && Rat(a) == None
+            && Bird(a) == None
+            && Fishes(a) == None
+            && Mutt(a) == None
+        )
+    ) && (
+        ShowerHead(a) == None // never snap to these
+        && RatCarcass(a) == None
+        && PigeonCarcass(a) == None
+        && SeagullCarcass(a) == None
+        && MuttCarcass(a) == None
+        && DobermanCarcass(a) == None
+        && GrayCarcass(a) == None
+    );
+}
+
 // Look at the closest frobbable object in range
 function LookClosest(bool bLookRight)
 {
@@ -2534,6 +2565,7 @@ function LookClosest(bool bLookRight)
             && (yaw > minYaw && yaw < maxYaw) // look slightly in the opposite direction, or 90 degrees in the normal direction
             && something != current // ignore what's already highlighted
             && (Abs(yaw) < nextYaw || next == None) // pick the angularly closest Actor
+            && SnapClassFilter(something) // ignore unimportant things
             && WouldBeHighlighted(rot) == something // ignore if something else is in front
         ) {
             next = something;
