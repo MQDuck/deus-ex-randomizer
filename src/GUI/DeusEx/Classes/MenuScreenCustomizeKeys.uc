@@ -18,10 +18,10 @@ struct S_KeyDisplayItem
 };
 
 //Make sure to update all four of these when you add a new binding
-var localized string    FunctionText[91];
-var string              MenuValues1[91];
-var string              MenuValues2[91];
-var string              AliasNames[91];
+var localized string    FunctionText[93];
+var string              MenuValues1[93];
+var string              MenuValues2[93];
+var string              AliasNames[93];
 
 
 var string				PendingCommands[100];
@@ -756,6 +756,8 @@ defaultproperties
      FunctionText(88)="Activate Short-Range Vision Enhancement"
      FunctionText(89)="Activate Infravision"
      FunctionText(90)="Activate Motion Sensor"
+     FunctionText(91)="Look Left"
+     FunctionText(92)="Look Right"
      AliasNames(0)="ParseLeftClick|Fire"
      AliasNames(1)="ParseRightClick"
      AliasNames(2)="DropItem"
@@ -847,6 +849,8 @@ defaultproperties
      AliasNames(88)="ActivateAugVisionShort"
      AliasNames(89)="ActivateAugInfraVision"
      AliasNames(90)="ActivateAugMotionSensor"
+     AliasNames(91)="LookLeft"
+     AliasNames(92)="LookRight"
      keyDisplayNames(0)=(inputKey=IK_LeftMouse,displayName="Left Mouse Button")
      keyDisplayNames(1)=(inputKey=IK_RightMouse,displayName="Right Mouse Button")
      keyDisplayNames(2)=(inputKey=IK_MiddleMouse,displayName="Middle Mouse Button")

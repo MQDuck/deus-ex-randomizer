@@ -11,6 +11,7 @@ var bool bAutorun;
 var float autorunTime;
 var bool bBlockAnimations;
 var transient bool bUpgradeAugs;
+var int minYaw, maxYaw; // for debugging; maybe remove later
 
 var Rotator ShakeRotator;
 
@@ -2437,6 +2438,11 @@ exec function PlayerRot()
     ClientMessage("Player rotation: (" $ Rotation.pitch $ ", " $ Rotation.yaw $ ", " $ Rotation.roll $ ")");
 }
 
+exec function PlayerViewRot()
+{
+    ClientMessage("Player view rotation: (" $ ViewRotation.pitch $ ", " $ ViewRotation.yaw $ ", " $ ViewRotation.roll $ ")");
+}
+
 // log the Location of the Actor looked at, so you don't have to type it manually
 exec function LookedLoc()
 {
@@ -2447,6 +2453,174 @@ exec function LookedLoc()
         ClientMessage("No Actor looked at.");
     else
         ClientMessage("Looking at " $ act $ " at Location (" $ act.Location.x $ ", " $ act.Location.y $ ", " $ act.Location.z $ ")");
+}
+
+// modified HighlightCenterObject()
+function Actor WouldBeHighlighted(Rotator rot)
+{
+    local Actor target, smallestTarget;
+	local Vector HitLoc, HitNormal, StartTrace, EndTrace;
+	local float minSize;
+	local bool bFirstTarget;
+
+    // figure out how far ahead we should trace
+    StartTrace = Location;
+    EndTrace = Location + (Vector(rot) * MaxFrobDistance);
+
+    // adjust for the eye height
+    StartTrace.Z += BaseEyeHeight;
+    EndTrace.Z += BaseEyeHeight;
+
+    smallestTarget = None;
+    minSize = 99999;
+    bFirstTarget = True;
+
+    // find the object that we are looking at
+    // make sure we don't select the object that we're carrying
+    // use the last traced object as the target...this will handle
+    // smaller items under larger items for example
+    // ScriptedPawns always have precedence, though
+    foreach TraceActors(class'Actor', target, HitLoc, HitNormal, EndTrace, StartTrace)
+    {
+        if (class'DXRActorsBase'.static.IsActuallyFrobbable(target) && (target != CarriedDecoration))
+        {
+            if (target.IsA('ScriptedPawn'))
+            {
+                smallestTarget = target;
+                break;
+            }
+            else if (target.IsA('Mover') && bFirstTarget)
+            {
+                smallestTarget = target;
+                break;
+            }
+            else if (target.CollisionRadius < minSize)
+            {
+                minSize = target.CollisionRadius;
+                smallestTarget = target;
+                bFirstTarget = False;
+            }
+        }
+    }
+
+    return smallestTarget;
+}
+
+function bool SnapClassFilter(Actor a)
+{
+    return true;
+    return (
+        dxr.flags.IsBingoMode() == true || (
+            Lamp(a) == None // snap to these in bingo modes only
+            && Fan1(a) == None
+            && Fan2(a) == None
+            && Fan1Vertical(a) == None
+            && Lamp(a) == None
+            && HKHangingLantern(a) == None
+            && HKHangingLantern2(a) == None
+            && Phone(a) == None
+            && WHPhone(a) == None
+            && TAD(a) == None
+            && Rat(a) == None
+            && Bird(a) == None
+            && Fishes(a) == None
+            && Mutt(a) == None
+        )
+    ) && (
+        ShowerHead(a) == None // never snap to these
+        && RatCarcass(a) == None
+        && PigeonCarcass(a) == None
+        && SeagullCarcass(a) == None
+        && MuttCarcass(a) == None
+        && DobermanCarcass(a) == None
+        && GrayCarcass(a) == None
+    );
+}
+
+// Look at the closest frobbable object in range
+function LookClosest(bool bLookRight)
+{
+    local Actor current, something, next;
+    local vector difference;
+    local rotator rot, nextRot;
+    local int yaw, nextYaw, yawMult;
+
+    if (bLookRight) {
+        yawMult = -1;
+    } else {
+        yawMult = 1;
+    }
+
+    current = WouldBeHighlighted(ViewRotation);
+    foreach RadiusActors(
+        class'Actor',
+        something,
+        MaxFrobDistance,
+        class'DXRActorsBase'.static.MakeVector(Location.X, Location.Y, Location.Z + BaseEyeHeight)
+    ) {
+        difference = something.Location - Location;
+        difference.Z -= BaseEyeHeight;
+        rot = rotator(difference);
+        yaw = (ViewRotation.Yaw - rot.Yaw) & 65535; // normalize to [0, 65535]
+        if (yaw > 32767) {
+            yaw -= 65536;  // fold to [-32768, 32767]
+        }
+        yaw *= yawMult; // swap sign if we're looking right
+
+        if (
+            something.Location != Location // ignore inventory items
+            && (yaw > minYaw && yaw < maxYaw) // look slightly in the opposite direction, or 90 degrees in the normal direction
+            && something != current // ignore what's already highlighted
+            && (Abs(yaw) < nextYaw || next == None) // pick the angularly closest Actor
+            && SnapClassFilter(something) // ignore unimportant things
+            && WouldBeHighlighted(rot) == something // ignore if something else is in front
+        ) {
+            next = something;
+            nextYaw = Abs(yaw);
+            nextRot = rot;
+        }
+        // if (something.Location == Location) continue;
+        // ClientMessage("something: " $ something);
+        // ClientMessage("yaw: " $ yaw);
+        // ClientMessage("rot: " $ rot);
+        // ClientMessage("next: " $ next);
+        // ClientMessage("nextYaw: " $ nextYaw);
+        // ClientMessage("nextRot: " $ nextRot);
+    }
+
+    if (next != None) {
+        // ClientMessage("trying to look at " $ next);
+        ViewRotation = nextRot;
+    }
+}
+
+exec function ShowMinYaw()
+{
+    ClientMessage(minYaw);
+}
+
+exec function ShowMaxYaw() {
+    ClientMessage(maxYaw);
+}
+
+exec function SetMinYaw(int minYaw)
+{
+    self.minYaw = minYaw;
+}
+
+exec function SetMaxYaw(int maxYaw)
+{
+    self.maxYaw = maxYaw;
+}
+
+exec function LookLeft()
+{
+    LookClosest(false);
+}
+
+exec function LookRight()
+{
+    LookClosest(true);
 }
 
 exec function LootActions()
@@ -2885,6 +3059,8 @@ defaultproperties
     SkillPointsAvail=6575
     LastBrowsedAugPage=-1 //OAT, 1/12/24: Hack so backtracking levels doesn't sometimes forget which page you saved last.
     LastBrowsedAug=-1 //OAT, same idea here.
+    minYaw=-2047
+    maxYaw=16383
 }
 
 // ---
