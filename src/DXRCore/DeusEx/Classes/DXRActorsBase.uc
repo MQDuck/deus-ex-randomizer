@@ -2745,6 +2745,22 @@ function ReduceHelicopterDelay(name dispTag, optional int idx, optional float ne
     }
 }
 
+function AttachMoverTag(DeusExDecoration d)
+{
+    local Mover M;
+
+    if (d.moverTag=='') return;
+
+    //Copied from DeusExDecoration::BeginPlay
+    foreach AllActors(class'Mover', M, d.moverTag)
+    {
+        d.SetBase(M);
+        d.SetPhysics(PHYS_None);
+        d.bInvincible = True;
+        d.bCollideWorld = False;
+    }
+}
+
 /*// returns the angle (-pi, pi] from a to b, ignoring Z coordinates
 static function float AngleAToB(vector a, vector b)
 {
